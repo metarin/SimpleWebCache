@@ -1,0 +1,98 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           SimpleWebCache
+version:        0.1.0.0
+description:    A simple web cache server
+homepage:       https://github.com/metarin/SimpleWebCache#readme
+bug-reports:    https://github.com/metarin/SimpleWebCache/issues
+author:         metarin
+maintainer:     mail@metarin.net
+copyright:      2023 metarin
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/metarin/SimpleWebCache
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_SimpleWebCache
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , bytestring
+    , case-insensitive
+    , http-client
+    , http-client-tls
+    , http-reverse-proxy
+    , http-types
+    , network-uri
+    , servant-server
+    , wai
+    , wai-app-static
+    , warp
+  default-language: Haskell2010
+
+executable SimpleWebCache-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_SimpleWebCache
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      SimpleWebCache
+    , base
+    , bytestring
+    , case-insensitive
+    , http-client
+    , http-client-tls
+    , http-reverse-proxy
+    , http-types
+    , network-uri
+    , servant-server
+    , wai
+    , wai-app-static
+    , warp
+  default-language: Haskell2010
+
+test-suite SimpleWebCache-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_SimpleWebCache
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      SimpleWebCache
+    , aeson
+    , base
+    , bytestring
+    , case-insensitive
+    , hspec
+    , hspec-wai
+    , hspec-wai-json
+    , http-client
+    , http-client-tls
+    , http-reverse-proxy
+    , http-types
+    , network-uri
+    , servant-server
+    , wai
+    , wai-app-static
+    , warp
+  default-language: Haskell2010

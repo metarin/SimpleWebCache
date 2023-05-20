@@ -1,0 +1,8 @@
+cradle:
+  stack:
+    - path: "./app"
+      component: "SimpleWebCache:exe:SimpleWebCache-exe"
+    - path: "./src"
+      component: "SimpleWebCache:lib"
+    - path: "./test"
+      component: "SimpleWebCache:test:SimpleWebCache-test"
