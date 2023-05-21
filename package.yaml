@@ -25,6 +25,7 @@ dependencies:
 - wai
 - warp
 - wai-app-static
+- wai-logger
 - bytestring
 - case-insensitive
 - network-uri

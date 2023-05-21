@@ -6,7 +6,7 @@ cabal-version: 1.12
 
 name:           SimpleWebCache
 version:        0.1.0.0
-description:    A simple web cache server
+description:    Please see the README on GitHub at <https://github.com/metarin/SimpleWebCache#readme>
 homepage:       https://github.com/metarin/SimpleWebCache#readme
 bug-reports:    https://github.com/metarin/SimpleWebCache/issues
 author:         metarin
@@ -43,6 +43,7 @@ library
     , servant-server
     , wai
     , wai-app-static
+    , wai-logger
     , warp
   default-language: Haskell2010
 
@@ -66,6 +67,7 @@ executable SimpleWebCache-exe
     , servant-server
     , wai
     , wai-app-static
+    , wai-logger
     , warp
   default-language: Haskell2010
 
@@ -94,5 +96,6 @@ test-suite SimpleWebCache-test
     , servant-server
     , wai
     , wai-app-static
+    , wai-logger
     , warp
   default-language: Haskell2010

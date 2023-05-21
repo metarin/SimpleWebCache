@@ -10,6 +10,7 @@ import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
 import Network.Wai.Application.Static (defaultFileServerSettings, StaticSettings(ss404Handler))
+import Network.Wai.Logger (withStdoutLogger)
 import Network.URI (URIAuth(uriRegName))
 import Network.HTTP.Client (newManager, defaultManagerSettings, Manager)
 import Network.HTTP.Client.TLS (newTlsManager)
@@ -28,18 +29,20 @@ data ReverseProxySettings = ReverseProxySettings
     }
 
 startApp :: Port -> FilePath -> Maybe URI -> IO ()
-startApp port dir mUri = case mUri of
-    Nothing ->  run port $ app dir Nothing
+startApp port dir mUri = withStdoutLogger $ \applogger -> case mUri of
+    Nothing -> runSettings (settings applogger) $ app dir Nothing
     _ -> do
         manager <- case scheme of
             "http:" -> newManager defaultManagerSettings
             "https:" -> newTlsManager
             _ -> ioError (userError "invalid uri scheme")
         let mrp = Just ReverseProxySettings { rpUri = fromJust mUri, rpManager = manager }
-        run port $ app dir mrp
+        runSettings (settings applogger) $ app dir mrp
         where
             uri = fromJust mUri
             scheme = uriScheme uri
+    where
+        settings logger = setPort port $ setLogger logger defaultSettings
 
 app :: FilePath -> Maybe ReverseProxySettings -> Application
 app dir mrp = serve api $ server dir mrp
