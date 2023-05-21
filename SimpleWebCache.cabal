@@ -6,7 +6,7 @@ cabal-version: 1.12
 
 name:           SimpleWebCache
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/metarin/SimpleWebCache#readme>
+description:    A simple web cache server
 homepage:       https://github.com/metarin/SimpleWebCache#readme
 bug-reports:    https://github.com/metarin/SimpleWebCache/issues
 author:         metarin
