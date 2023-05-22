@@ -62,12 +62,12 @@ reverseProxy mrp req sendResponse = case mrp of
     _ -> waiProxyTo
             ( \request ->
             return $
-                WPRModifiedRequestSecure
+                modifiedRequest
                 ( request
-                    { requestHeaders = [(toHeaderName "Host", hostname)]
+                    { requestHeaders = (toHeaderName "Host", hostname) : filter (\x -> fst x /= toHeaderName "Host") (requestHeaders request)
                     }
                 )
-                (ProxyDest hostname 443)
+                (ProxyDest hostname reqPort)
             )
             defaultOnExc
             manager
@@ -75,6 +75,11 @@ reverseProxy mrp req sendResponse = case mrp of
             sendResponse
         where
             rp = fromJust mrp
+            uri = rpUri rp
+            scheme = uriScheme uri
+            isHttps = scheme == "https:"
+            modifiedRequest = if isHttps then WPRModifiedRequestSecure else WPRModifiedRequest 
+            reqPort = if isHttps then 443 else 80
             manager = rpManager rp
             uriAuth = fromJust $ uriAuthority $ rpUri rp
             hostname = toHeaderContent $ uriRegName uriAuth
