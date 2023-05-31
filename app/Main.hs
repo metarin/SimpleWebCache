@@ -1,11 +1,18 @@
 module Main (main) where
 
-import Lib
+import Lib (startApp)
 import Text.Read (readMaybe)
 import Data.Maybe (fromMaybe)
 import System.Environment (getArgs)
 import System.Console.GetOpt
-import Network.URI (URI, parseAbsoluteURI)
+    ( getOpt
+    , usageInfo
+    , ArgDescr(ReqArg, NoArg)
+    , ArgOrder(Permute)
+    , OptDescr(..) )
+import Network.URI
+    ( parseAbsoluteURI
+    , URI )
 
 data Options = Options
     { optDownloadMissed :: Bool
@@ -30,7 +37,7 @@ options =
     , Option ['p'] ["port"]
         (ReqArg (\ p opts -> opts { optPortNum = fromMaybe (optPortNum opts) $ readMaybe p }) "PORT")
         "Port num (default 54321)"
-    , Option ['r']     ["reverse-proxy"]
+    , Option ['r'] ["reverse-proxy"]
         (ReqArg (\ r opts -> opts { optReverseProxy = parseAbsoluteURI r }) "URI")
         "Acts as a reverse proxy when accessing uncached files"
     , Option ['d'] ["cache-dir"]

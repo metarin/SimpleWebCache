@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeOperators   #-}
+{-# LANGUAGE OverloadedStrings #-} 
 module Lib
     ( startApp
     , app
@@ -9,17 +8,28 @@ module Lib
 import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
-import Network.Wai.Application.Static (defaultFileServerSettings, StaticSettings(ss404Handler))
+import Network.Wai.Application.Static
+    ( defaultFileServerSettings
+    , StaticSettings(ss404Handler) )
 import Network.Wai.Logger (withStdoutLogger)
 import Network.URI (URIAuth(uriRegName))
-import Network.HTTP.Client (newManager, defaultManagerSettings, Manager)
+import Network.HTTP.Client
+    ( newManager
+    , defaultManagerSettings
+    , Manager)
 import Network.HTTP.Client.TLS (newTlsManager)
-import Network.HTTP.Types (status404)
 import Network.HTTP.ReverseProxy
-import Data.Maybe (fromJust)
+    ( defaultOnExc
+    , waiProxyTo
+    , ProxyDest(ProxyDest)
+    , WaiProxyResponse(WPRModifiedRequest, WPRModifiedRequestSecure) )
+import Data.Maybe
+    ( fromJust
+    , isNothing )
 import Data.ByteString.Lazy (toStrict)
-import Data.ByteString.Builder (toLazyByteString, string7)
-import Data.CaseInsensitive (mk)
+import Data.ByteString.Builder
+    ( toLazyByteString
+    , string7)
 
 type API = Raw
 
@@ -52,37 +62,33 @@ api = Proxy
 
 server :: FilePath -> Maybe ReverseProxySettings -> Server API
 server dir mrp = serveDirectoryWith settings
-    where settings = (defaultFileServerSettings dir) { ss404Handler = Just (reverseProxy mrp) }
-
-reverseProxy :: Maybe ReverseProxySettings -> Application
-reverseProxy mrp req sendResponse = case mrp of
-    Nothing -> sendResponse $ responseLBS status404
-                        [ (toHeaderName "Content-Type", toHeaderContent "text/plain")
-                        ] (toLazyByteString $ string7 "File not found")
-    _ -> waiProxyTo
-            ( \request ->
-            return $
-                modifiedRequest
-                ( request
-                    { requestHeaders = (toHeaderName "Host", hostname) : filter (\x -> fst x /= toHeaderName "Host") (requestHeaders request)
-                    }
-                )
-                (ProxyDest hostname reqPort)
-            )
-            defaultOnExc
-            manager
-            req
-            sendResponse
-        where
-            rp = fromJust mrp
-            uri = rpUri rp
-            scheme = uriScheme uri
-            isHttps = scheme == "https:"
-            modifiedRequest = if isHttps then WPRModifiedRequestSecure else WPRModifiedRequest 
-            reqPort = if isHttps then 443 else 80
-            manager = rpManager rp
-            uriAuth = fromJust $ uriAuthority $ rpUri rp
-            hostname = toHeaderContent $ uriRegName uriAuth
     where
-        toHeaderContent = toStrict . toLazyByteString . string7
-        toHeaderName = mk . toHeaderContent
+        rp = fromJust mrp
+        on404Func = if isNothing mrp
+            then Just (reverseProxy rp)
+            else Nothing
+        settings = (defaultFileServerSettings dir) { ss404Handler = on404Func }
+
+reverseProxy :: ReverseProxySettings -> Application
+reverseProxy rp =
+    waiProxyTo
+        ( \request ->
+        return $
+            modifiedRequest
+            ( request
+                { requestHeaders = ("Host", hostname) : filter (\x -> fst x /= "Host") (requestHeaders request)
+                }
+            )
+            (ProxyDest hostname reqPort)
+        )
+        defaultOnExc
+        manager
+    where
+        uri = rpUri rp
+        scheme = uriScheme uri
+        isHttps = scheme == "https:"
+        modifiedRequest = if isHttps then WPRModifiedRequestSecure else WPRModifiedRequest 
+        reqPort = if isHttps then 443 else 80
+        manager = rpManager rp
+        uriAuth = fromJust $ uriAuthority $ rpUri rp
+        hostname = toStrict . toLazyByteString . string7 $ uriRegName uriAuth

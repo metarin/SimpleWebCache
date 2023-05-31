@@ -27,7 +27,6 @@ dependencies:
 - wai-app-static
 - wai-logger
 - bytestring
-- case-insensitive
 - network-uri
 - http-types
 - http-client
