@@ -59,6 +59,7 @@ main = do
     let
         port = optPortNum opt
         dir = optCacheDir opt
+        isDownloadMissed = optDownloadMissed opt
         mUri = optReverseProxy opt
 
-    startApp port dir mUri
+    startApp port dir isDownloadMissed mUri

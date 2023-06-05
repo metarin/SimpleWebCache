@@ -12,4 +12,3 @@ stack exec SimpleWebCache-exe -- -d /path/to/cache -r http[s]://upstream.com +RT
 ~~~
 
 ## Todo
-- Download uncached file when specified `-D` option

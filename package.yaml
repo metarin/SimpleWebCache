@@ -27,10 +27,12 @@ dependencies:
 - wai-app-static
 - wai-logger
 - bytestring
+- string-conversions
 - network-uri
 - http-types
 - http-client
 - http-client-tls
+- http-conduit
 - http-reverse-proxy
 
 ghc-options:

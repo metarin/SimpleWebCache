@@ -36,10 +36,12 @@ library
     , bytestring
     , http-client
     , http-client-tls
+    , http-conduit
     , http-reverse-proxy
     , http-types
     , network-uri
     , servant-server
+    , string-conversions
     , wai
     , wai-app-static
     , wai-logger
@@ -59,10 +61,12 @@ executable SimpleWebCache-exe
     , bytestring
     , http-client
     , http-client-tls
+    , http-conduit
     , http-reverse-proxy
     , http-types
     , network-uri
     , servant-server
+    , string-conversions
     , wai
     , wai-app-static
     , wai-logger
@@ -87,10 +91,12 @@ test-suite SimpleWebCache-test
     , hspec-wai-json
     , http-client
     , http-client-tls
+    , http-conduit
     , http-reverse-proxy
     , http-types
     , network-uri
     , servant-server
+    , string-conversions
     , wai
     , wai-app-static
     , wai-logger
